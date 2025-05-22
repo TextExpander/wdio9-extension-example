@@ -19,8 +19,11 @@ When(/^I open the Extensions page$/, async () => {
 
   await browser.url('chrome://extensions');
 
-  // Pause here for a moment to see whether the extension has been loaded
-  await browser.pause(10000);
+  await browser.pause(2000);
+
+  const extensionItem = await $$('extensions-item');
+
+  console.log(`Loaded extensions found: ${extensionItem.length}`);
 });
 
 Then(/^I can open the "Hello world" extension page$/, async () => {

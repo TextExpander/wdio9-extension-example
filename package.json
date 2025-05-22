@@ -1,7 +1,7 @@
 {
-  "author": "",
+  "author": "Jessie Purvis <purvis.jessie.e@gmail.com>",
   "license": "MIT",
-  "name": "cucumber-boilerplate",
+  "name": "wdio9-extension-example",
   "version": "2.0.0",
   "description": "Boilerplate project to run WebdriverIO tests with Cucumber",
   "homepage": "https://github.com/webdriverio/cucumber-boilerplate",
@@ -26,11 +26,6 @@
     "selenium"
   ],
   "scripts": {
-    "clean": "read -p \"Are you sure you want to clean the project? [y/n] \" REPLY; if [[ $REPLY =~ ^[Yy]$ ]]; then rm -R .git .github demo-app test .codeclimate.yml .travis.yml jest.json wdio.BUILD.conf.js src/features/**; fi",
-    "test": "run-s test:*",
-    "test:lint": "eslint 'src/**/*.ts' 'test/**/*.js!(setup.js)'",
-    "test:unit": "jest --config=jest.config.cjs --detectOpenHandles",
-    "test:features": "wdio run wdio.conf.ts",
     "wdio": "wdio run wdio.conf.ts"
   },
   "devDependencies": {
