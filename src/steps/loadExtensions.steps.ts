@@ -8,7 +8,7 @@ const EXTENSION_LOCAL_ID = '';
 
 When(/^I open the Extensions page$/, async () => {
   /**
-   * The commented-out lines are supposedly a way to load extensions in WDIO 9 using Bidi's webExtension.install function, but always fail with the following error:
+   * These commented-out lines are supposedly a way to load extensions in WDIO 9 using Bidi's webExtension.install function, but always fail with the following error:
    * Error: WebDriver Bidi command "webExtension.install" failed with error: unknown error - Method not available.
    */
 
@@ -16,6 +16,16 @@ When(/^I open the Extensions page$/, async () => {
   // console.log(`Loading extension at path: ${extensionPath}`);
   // await browser.webExtensionInstall({ extensionData: { type: 'path', path: extensionPath } });
   // await browser.pause(5000);
+
+
+
+  /**
+   * These commented-out lines are supposedly a way to load extensions using Puppeteer, but always fail with the following error:
+   * ProtocolError: Protocol error (Extensions.loadUnpacked): Method not available.
+   */
+  // const extensionPath = path.join(url.fileURLToPath(new URL('.', import.meta.url)), '..', '..', 'extension-code');
+  // const puppeteer = await browser.getPuppeteer();
+  // await puppeteer.installExtension(extensionPath);
 
   await browser.url('chrome://extensions');
 
