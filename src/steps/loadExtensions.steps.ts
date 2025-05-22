@@ -4,7 +4,7 @@ import { browser } from '@wdio/globals';
 import path from 'node:path';
 import url from 'node:url';
 
-const EXTENSION_LOCAL_ID = 'ddmgpgpbnpgmehdbpcggbfmbibefmmjc';
+const EXTENSION_LOCAL_ID = '';
 
 When(/^I open the Extensions page$/, async () => {
   /**
@@ -25,6 +25,10 @@ When(/^I open the Extensions page$/, async () => {
 
 Then(/^I can open the "Hello world" extension page$/, async () => {
   // Attempt to open the extension's page and validate it's contents
+
+  if (EXTENSION_LOCAL_ID === '') {
+    throw Error('EXTENSION_LOCAL_ID has not been set. Please check instructions in README.md to set the local ID.');
+  }
 
   await browser.newWindow(`chrome-extension://${EXTENSION_LOCAL_ID}/hello.html`, { type: 'tab' });
   await browser.pause(2000);
