@@ -31,4 +31,4 @@ $ npm run wdio
 
 # Configurations
 
-To configure your tests, checkout the [`wdio.conf.js`](https://github.com/webdriverio/cucumber-boilerplate/blob/main/wdio.conf.js) file in your test directory. It comes with a bunch of documented options you can choose from.
+To configure your tests, checkout the [`wdio.conf.ts`](https://github.com/webdriverio/cucumber-boilerplate/blob/main/wdio.conf.js) file in your test directory. It comes with a bunch of documented options you can choose from.
