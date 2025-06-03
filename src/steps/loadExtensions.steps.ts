@@ -1,53 +1,62 @@
 /* eslint-disable wdio/no-pause */
 import { Given, When, Then } from '@wdio/cucumber-framework';
 import { browser } from '@wdio/globals';
-import path from 'node:path';
-import url from 'node:url';
 
-const EXTENSION_LOCAL_ID = '';
+async function getExtensionId (this: WebdriverIO.Browser, extensionName: string) {
+    if ((this.capabilities as WebdriverIO.Capabilities).browserName !== 'chrome') {
+      throw new Error('This command only works with Chrome')
+    }
 
-When(/^I open the Extensions page$/, async () => {
-  /**
-   * These commented-out lines are supposedly a way to load extensions in WDIO 9 using Bidi's webExtension.install function, but always fail with the following error:
-   * Error: WebDriver Bidi command "webExtension.install" failed with error: unknown error - Method not available.
-   */
+    await this.url('chrome://extensions/')
+  const extension = await this.waitUntil(async () => {
+    const extensions = await this.$$('extensions-item')
+    const extension: WebdriverIO.Element = await extensions.find(async (ext) => (
+      await ext.$('#name').getText()) === extensionName
+    )
 
-  // const extensionPath = path.join(url.fileURLToPath(new URL('.', import.meta.url)), '..', '..', 'extension-code');
-  // console.log(`Loading extension at path: ${extensionPath}`);
-  // await browser.webExtensionInstall({ extensionData: { type: 'path', path: extensionPath } });
-  // await browser.pause(5000);
+    if (!extension) {
+      const installedExtensions = await extensions.map((ext) => ext.$('#name').getText())
+      throw new Error(`Couldn't find extension "${extensionName}", available installed extensions are "${installedExtensions.join('", "')}"`)
+    }
 
+    return extension
+  })
 
+  const extId = await extension.getAttribute('id')
+  return extId
+}
 
-  /**
-   * These commented-out lines are supposedly a way to load extensions using Puppeteer, but always fail with the following error:
-   * ProtocolError: Protocol error (Extensions.loadUnpacked): Method not available.
-   */
-  // const extensionPath = path.join(url.fileURLToPath(new URL('.', import.meta.url)), '..', '..', 'extension-code');
-  // const puppeteer = await browser.getPuppeteer();
-  // await puppeteer.installExtension(extensionPath);
+async function printHandlesAndContextTree (browser: WebdriverIO.Browser) {
+  console.log(`Open window handles: ${await browser.getWindowHandles()}`);
 
-  await browser.url('chrome://extensions');
+  const contextTree = await browser.browsingContextGetTree({});
+  console.log(`Context tree: ${JSON.stringify(contextTree)}`);
+}
 
-  await browser.pause(2000);
+When(/^I open multiple "([^"]*)" extension pages$/, async (extensionName: string) => {
+  const extensionId = await getExtensionId.call(browser, extensionName);
 
-  const extensionItem = await $$('extensions-item');
-
-  console.log(`Loaded extensions found: ${extensionItem.length}`);
-});
-
-Then(/^I can open the "Hello world" extension page$/, async () => {
-  // Attempt to open the extension's page and validate it's contents
-
-  if (EXTENSION_LOCAL_ID === '') {
-    throw Error('EXTENSION_LOCAL_ID has not been set. Please check instructions in README.md to set the local ID.');
-  }
-
-  await browser.newWindow(`chrome-extension://${EXTENSION_LOCAL_ID}/hello.html`, { type: 'tab' });
-  await browser.pause(2000);
-
+  // Open the first page
+  await browser.url(`chrome-extension://${extensionId}/hello.html`);
   const titleElement = await browser.$('h1');
   const titleText = await titleElement.getText();
   expect(titleText).toEqual('Hello Extensions');
+
+  console.log('Browser contexts BEFORE opening second window')
+  await printHandlesAndContextTree(browser);
+
+  // Try to open the second page
+  await browser.newWindow(`chrome-extension://${extensionId}/goodbye.html`, { type: 'tab' });
+  await browser.pause(2000);
+
+  console.log('Browser contexts AFTER opening second window')
+  await printHandlesAndContextTree(browser);
 });
 
+Then(/^I have two page handles to switch between$/, async () => {
+  await browser.waitUntil(async () => {
+    const openHandles = await browser.getWindowHandles();
+
+    return openHandles.length === 2;
+  }, { timeoutMsg: 'Never had at least 2 available window handles'});
+});

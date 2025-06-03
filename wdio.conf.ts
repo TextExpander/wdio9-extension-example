@@ -4,6 +4,7 @@ import path from 'node:path';
 import { hooks } from './src/support/hooks.js';
 
 const extensionPath = path.join(url.fileURLToPath(new URL('.', import.meta.url)), 'extension-code');
+// const extensionPath = './extension-code';
 console.log(`Extension path: ${extensionPath}`);
 
 export const config: WebdriverIO.Config = {
@@ -28,7 +29,7 @@ export const config: WebdriverIO.Config = {
     capabilities: [{
         maxInstances: 1,
         //
-        browserName: 'chrome',
+        browserName: 'chromium',
 
         /**
          * In WDIO 8, this combination of chromeOptions and devtoolsOptions would load the
@@ -37,16 +38,15 @@ export const config: WebdriverIO.Config = {
          */
         'goog:chromeOptions': {
                 args: [
-                    'window-size=1280,800',
-                    // 'headless',
-                    'disable-dev-shm-usage',
-                    `load-extension=${extensionPath}`
-                ],
+                    '--verbose',
+                    '--log-path=/Users/jessiepurvis/TextExpander_Code/wdio9-extension-example/chromedriver.log',
+                    '--no-sandbox',
+                    '--disable-dev-shm-usage',
+                    `--load-extension=${extensionPath}`
+                ]
             },
-        'wdio:devtoolsOptions': {
-          ignoreDefaultArgs: ['--disable-extensions']
-        }
 
+        webSocketUrl: true,
         /**
          * This setting is shown in the example config file at https://webdriver.io/docs/configurationfile/,
          * but does not replicate the behavior from the devtoolsOptions config above
